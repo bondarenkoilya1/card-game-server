@@ -76,21 +76,3 @@ app.delete("/cards/:id", (req, res) => {
     `You cannot delete an element with the wrong id. You entered: ${req.params.id}`
   );
 });
-
-app.get("/cards/:id", (req, res) => {
-  if (ObjectId.isValid(req.params.id)) {
-    db.collection("books")
-      .findOne({ _id: new ObjectId(req.params.id) })
-      .then((book) => {
-        res.status(200).json(book);
-      })
-      .catch((error) => {
-        res.status(500).json({ error: error.message });
-      });
-    return req.params.id;
-  }
-
-  res.status(404).json({
-    error: `Element with such id was not found. You entered: ${req.params.id}`
-  });
-});
