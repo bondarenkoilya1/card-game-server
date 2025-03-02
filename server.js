@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectToDb, getDb } from "./db";
+import { ObjectId } from "mongodb";
 
 dotenv.config();
 
@@ -23,6 +24,10 @@ connectToDb((error) => {
   db = getDb();
 });
 
+const handleError = (res, errorCode, error) => {
+  res.status(errorCode).json({ error });
+};
+
 // First param here is just a route, it can be any normal string
 app.get("/card-sets", (req, res) => {
   const books = [];
@@ -37,7 +42,37 @@ app.get("/card-sets", (req, res) => {
     .then(() => {
       res.status(200).json(books);
     })
-    .catch((error) => {
-      res.status(500).json({ error: error.message });
-    });
+    .catch((error) => handleError(res, 500, error.message));
+});
+
+app.get("/cards/:id", (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    db.collection("books")
+      .findOne({ _id: new ObjectId(req.params.id) })
+      .then((book) => {
+        res.status(200).json(book);
+      })
+      .catch((error) => handleError(res, 500, error.message));
+    return req.params.id;
+  }
+
+  handleError(res, 404, `Element with such id was not found. You entered: ${req.params.id}`);
+});
+
+app.delete("/cards/:id", (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    db.collection("books")
+      .deleteOne({ _id: new ObjectId(req.params.id) })
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((error) => handleError(res, 500, error.message));
+    return req.params.id;
+  }
+
+  handleError(
+    res,
+    404,
+    `You cannot delete an element with the wrong id. You entered: ${req.params.id}`
+  );
 });
