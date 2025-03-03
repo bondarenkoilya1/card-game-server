@@ -6,7 +6,7 @@ import { BookRoutes } from "./routes";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3333;
+const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 const COLLECTION_NAME = "card-sets";
 
