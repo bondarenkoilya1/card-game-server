@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 import { BookRoutes } from "./routes";
 
 dotenv.config();
@@ -10,6 +11,7 @@ const DB_URL = process.env.DB_URL;
 const COLLECTION_NAME = "card-sets";
 
 const app = express();
+app.use(cors());
 app.use(BookRoutes);
 
 mongoose
