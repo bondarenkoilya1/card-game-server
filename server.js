@@ -1,27 +1,23 @@
 import express from "express";
 import dotenv from "dotenv";
-import { connectToDb, getDb } from "./db";
 import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
+const DB_URL = process.env.DB_URL;
+const COLLECTION_NAME = "card-sets";
 
 const app = express();
 
-let db;
+mongoose
+  .connect(DB_URL, { dbName: COLLECTION_NAME })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.log(`Database connection error: ${error}`));
 
-connectToDb((error) => {
-  if (error) {
-    console.log(`Database connection error: ${error}`);
-    return error;
-  }
-
-  app.listen(PORT, (err) => {
-    err ? console.log(err) : console.log(`Listening port ${PORT}`);
-  });
-
-  db = getDb();
+app.listen(PORT, (error) => {
+  error ? console.log(error) : console.log(`Listening on PORT: ${PORT}`);
 });
 
 const handleError = (res, errorCode, error) => {
@@ -29,20 +25,17 @@ const handleError = (res, errorCode, error) => {
 };
 
 // First param here is just a route, it can be any normal string
-app.get("/card-sets", (req, res) => {
-  const books = [];
-
-  db.collection("books")
-    .find()
-    // testing, print only specified field
-    .project({ title: 1 })
-    // testing, sort by specified field in alphabetical order
-    .sort({ title: 1 })
-    .forEach((book) => books.push(book))
-    .then(() => {
-      res.status(200).json(books);
-    })
-    .catch((error) => handleError(res, 500, error.message));
+app.get("/card-sets", async (req, res) => {
+  try {
+    const books = await mongoose.connection.db
+      .collection("books")
+      .find()
+      .sort({ title: 1 })
+      .toArray();
+    res.status(200).json(books);
+  } catch (error) {
+    handleError(res, 500, error.message);
+  }
 });
 
 app.get("/cards/:id", (req, res) => {
@@ -57,22 +50,4 @@ app.get("/cards/:id", (req, res) => {
   }
 
   handleError(res, 404, `Element with such id was not found. You entered: ${req.params.id}`);
-});
-
-app.delete("/cards/:id", (req, res) => {
-  if (ObjectId.isValid(req.params.id)) {
-    db.collection("books")
-      .deleteOne({ _id: new ObjectId(req.params.id) })
-      .then((result) => {
-        res.status(200).json(result);
-      })
-      .catch((error) => handleError(res, 500, error.message));
-    return req.params.id;
-  }
-
-  handleError(
-    res,
-    404,
-    `You cannot delete an element with the wrong id. You entered: ${req.params.id}`
-  );
 });
