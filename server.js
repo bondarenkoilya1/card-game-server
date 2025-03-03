@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { Book } from "./models";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3333;
 const DB_URL = process.env.DB_URL;
 const COLLECTION_NAME = "card-sets";
 
@@ -20,34 +20,20 @@ app.listen(PORT, (error) => {
   error ? console.log(error) : console.log(`Listening on PORT: ${PORT}`);
 });
 
-const handleError = (res, errorCode, error) => {
-  res.status(errorCode).json({ error });
+const handleError = (response, errorCode, error) => {
+  response.status(errorCode).json({ error });
 };
 
-// First param here is just a route, it can be any normal string
-app.get("/card-sets", async (req, res) => {
-  try {
-    const books = await mongoose.connection.db
-      .collection("books")
-      .find()
-      .sort({ title: 1 })
-      .toArray();
-    res.status(200).json(books);
-  } catch (error) {
-    handleError(res, 500, error.message);
-  }
-});
+// Todo: create a separate file for routes
+app.get("/card-sets", (request, response) =>
+  Book.find()
+    .sort({ title: 1 })
+    .then((books) => response.status(200).json(books))
+    .catch((error) => handleError(response, 500, error.message))
+);
 
-app.get("/cards/:id", (req, res) => {
-  if (ObjectId.isValid(req.params.id)) {
-    db.collection("books")
-      .findOne({ _id: new ObjectId(req.params.id) })
-      .then((book) => {
-        res.status(200).json(book);
-      })
-      .catch((error) => handleError(res, 500, error.message));
-    return req.params.id;
-  }
-
-  handleError(res, 404, `Element with such id was not found. You entered: ${req.params.id}`);
-});
+app.get("/cards/:id", (request, response) =>
+  Book.findById(request.params.id)
+    .then((book) => response.status(200).json(book))
+    .catch((error) => handleError(response, 500, error.message))
+);
