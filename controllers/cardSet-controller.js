@@ -18,24 +18,33 @@ export const getCardSet = (request, response) => {
     .catch((error) => handleError(response, 500, error.message));
 };
 
-// export const getCard = (request, response) =>
-//   CardSet.findById(request.params.id)
-//     .then((book) => response.status(200).json(book))
-//     .catch((error) => handleError(response, 500, error.message));
+export const getCard = (request, response) => {
+  const filterByCardId = { "cards._id": request.params.id };
+  const returnOnlyRequiredCard = { "cards.$": 1 };
+
+  CardSet.findOne(filterByCardId, returnOnlyRequiredCard)
+    .then((cardSet) => {
+      if (!cardSet)
+        return handleError(response, 404, "Requested card was not found. Try another id");
+      handleSuccess(response, 200, cardSet.cards[0]);
+    })
+    .catch((error) => handleError(response, 500, error.message));
+};
 
 // const newCardSet = new CardSet({
-//   cardSetName: "bush",
+//   cardSetName: "maths",
 //   cards: [
 //     {
-//       id: crypto.randomUUID(),
-//       name: "Mainu",
+//       name: "Minus",
 //       type: "range",
 //       points: 4
 //     }
 //   ]
 // });
-
+//
 // newCardSet
 //   .save()
 //   .then(() => console.log("CardSet saved successfully"))
 //   .catch((error) => console.error("Error saving CardSet:", error.message));
+
+// TODO: Add routes to add new cards, delete and update

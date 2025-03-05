@@ -6,7 +6,6 @@ const cardSetSchema = new Schema({
   cardSetName: { type: String, required: true, unique: true },
   cards: [
     {
-      id: { type: String, required: true, unique: true },
       name: { type: String, required: true },
       type: { type: String, required: true },
       points: { type: Number, required: true }
