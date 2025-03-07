@@ -18,6 +18,35 @@ export const getCardSet = (request, response) => {
     .catch((error) => handleError(response, 500, error.message));
 };
 
+/* {
+        "_id": "67c8990d051da8b0cd65a7a3",
+        "cardSetName": "aside",
+        "cards": [
+            {
+                "name": "Minus",
+                "type": "range",
+                "points": 4,
+                "_id": "67c8990d051da8b0cd65a7a4"
+            }
+        ],
+        "__v": 0
+    }
+ */
+export const deleteCardSet = (request, response) => {
+  CardSet.findByIdAndDelete(request.params.id)
+    .then((cardSet) => {
+      if (cardSet === null) {
+        throw new Error("Operation was canceled. Card with this id was deleted recently");
+      }
+
+      const data = { message: "Card with this id was successfully deleted.", cardSet };
+      handleSuccess(response, 200, data);
+    })
+    .catch((error) => handleError(response, 500, error.message));
+};
+
+/* Bring out to a separate file. [cardSet-controller.js, card-controller.js]
+   For each there will be similar routes such as delete, post, patch */
 export const getCard = (request, response) => {
   const filterByCardId = { "cards._id": request.params.id };
   const returnOnlyRequiredCard = { "cards.$": 1 };
