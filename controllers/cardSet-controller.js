@@ -12,34 +12,36 @@ export const getCardSets = (request, response) =>
 /* request.params.name, where name is depending on what I
    specified in router function.
    For example: "/card-set/:name" */
-export const getCardSet = (request, response) => {
+export const getCardSet = (request, response) =>
   CardSet.findOne({ cardSetName: request.params.name })
-    .then((cardSet) => handleSuccess(response, 200, cardSet))
-    .catch((error) => handleError(response, 500, error.message));
-};
+    .then((cardSet) => {
+      if (cardSet === null)
+        throw new Error(
+          "Card set with such name was not found. Note, that you have to specify exactly a card set name, not an id or something else"
+        );
 
-/* {
-        "_id": "67c8990d051da8b0cd65a7a3",
-        "cardSetName": "aside",
-        "cards": [
-            {
-                "name": "Minus",
-                "type": "range",
-                "points": 4,
-                "_id": "67c8990d051da8b0cd65a7a4"
-            }
-        ],
-        "__v": 0
-    }
- */
-export const deleteCardSet = (request, response) => {
+      handleSuccess(response, 200, cardSet);
+    })
+    .catch((error) => handleError(response, 500, error.message));
+
+export const deleteCardSet = (request, response) =>
   CardSet.findByIdAndDelete(request.params.id)
     .then((cardSet) => {
-      if (cardSet === null) {
+      if (cardSet === null)
         throw new Error("Operation was canceled. Card with this id was deleted recently");
-      }
 
       const data = { message: "Card with this id was successfully deleted.", cardSet };
+      handleSuccess(response, 200, data);
+    })
+    .catch((error) => handleError(response, 500, error.message));
+
+export const addCardSet = (request, response) => {
+  const newCardSet = new CardSet(request.body);
+
+  newCardSet
+    .save()
+    .then((cardSet) => {
+      const data = { message: "Card with this id was successfully added.", cardSet };
       handleSuccess(response, 200, data);
     })
     .catch((error) => handleError(response, 500, error.message));
@@ -59,21 +61,3 @@ export const getCard = (request, response) => {
     })
     .catch((error) => handleError(response, 500, error.message));
 };
-
-// const newCardSet = new CardSet({
-//   cardSetName: "maths",
-//   cards: [
-//     {
-//       name: "Minus",
-//       type: "range",
-//       points: 4
-//     }
-//   ]
-// });
-//
-// newCardSet
-//   .save()
-//   .then(() => console.log("CardSet saved successfully"))
-//   .catch((error) => console.error("Error saving CardSet:", error.message));
-
-// TODO: Add routes to add new cards, delete and update
