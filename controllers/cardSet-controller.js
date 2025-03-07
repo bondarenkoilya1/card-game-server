@@ -1,9 +1,5 @@
 import { CardSet } from "../models";
-
-const handleSuccess = (response, statusCode, data) => response.status(statusCode).json(data);
-const handleError = (response, errorCode, error) => response.status(errorCode).json({ error });
-
-// Decide where I should return object in response and where not
+import { handleError, handleSuccess } from "./global";
 
 export const getCardSets = (request, response) => {
   CardSet.find()
@@ -50,35 +46,16 @@ export const addCardSet = (request, response) => {
     .catch((error) => handleError(response, 500, error.message));
 };
 
-/* Kinda don't understand why I return cardSet here,
-   decide later, when will call from front-end */
 export const updateCardSet = (request, response) => {
   const checkIsObjectEmpty = (object) => Object.keys(object).length === 0;
 
-  CardSet.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  CardSet.findByIdAndUpdate(request.params.id, request.body)
     .then(() => {
       if (checkIsObjectEmpty(request.body)) {
         throw new Error("You didn't send any data. The card remains as it was");
       }
 
       handleSuccess(response, 200, "Card set with this id was successfully updated.");
-    })
-    .catch((error) => handleError(response, 500, error.message));
-};
-
-/* Bring out to a separate file. [cardSet-controller.js, card-controller.js]
-   For each there will be similar routes such as delete, post, patch */
-export const getCard = (request, response) => {
-  const filterByCardId = { "cards._id": request.params.id };
-  const returnOnlyRequiredCard = { "cards.$": 1 };
-
-  CardSet.findOne(filterByCardId, returnOnlyRequiredCard)
-    .then((cardSet) => {
-      if (!cardSet) {
-        return handleError(response, 404, "Requested card was not found. Try another id");
-      }
-
-      handleSuccess(response, 200, cardSet.cards[0]);
     })
     .catch((error) => handleError(response, 500, error.message));
 };

@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-import { CardSetRoutes } from "./routes";
+import { CardSetRoutes, CardRoutes } from "./routes";
 
 dotenv.config();
 
@@ -14,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(CardSetRoutes);
+app.use(CardRoutes);
 
 mongoose
   .connect(DATABASE_URL, { dbName: DATABASE_NAME })
