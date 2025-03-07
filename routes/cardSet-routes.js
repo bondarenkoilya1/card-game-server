@@ -11,9 +11,10 @@ import {
 const router = express.Router();
 
 router.get("/card-sets", getCardSets);
-router.get("/card-set/:name", getCardSet);
+router.get("/card-set/:id", getCardSet);
 router.post("/card-set", addCardSet);
 router.delete("/card-set/:id", deleteCardSet);
+// investigate why patch and not put
 router.patch("/card-set/:id", updateCardSet);
 
 // bring out to a separate file (card-routes)
