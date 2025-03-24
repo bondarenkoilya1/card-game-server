@@ -11,6 +11,7 @@ export const getCardSets = (request, response) => {
 /* request.params.name, where name is depending on what I
    specified in router function.
    For example: "/card-set/:name" */
+// todo: rewrite comment. not so clear now
 export const getCardSet = (request, response) => {
   CardSet.findById(request.params.id)
     .then((cardSet) => {
