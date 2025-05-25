@@ -21,6 +21,8 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.log(`Database connection error: ${error}`));
 
+app.use(express.static("public"));
+
 app.listen(PORT, (error) =>
   error ? console.log(error) : console.log(`Listening on PORT: ${PORT}`)
 );
