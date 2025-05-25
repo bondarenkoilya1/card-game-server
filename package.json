@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec babel-node server.js",
-    "build": "babel src --out-dir build",
+    "build": "babel server.js --out-file build/server.js",
     "start": "node build/server.js"
   },
   "keywords": [],
