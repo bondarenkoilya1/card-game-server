@@ -1,5 +1,6 @@
 import { CardSet } from "../models";
-import { handleError, handleSuccess } from "./global";
+import { checkIsObjectEmpty, handleError, handleSuccess } from "./global";
+import { slugify } from "../utils";
 
 export const getCardSets = (request, response) => {
   CardSet.find()
@@ -39,7 +40,10 @@ export const deleteCardSet = (request, response) => {
 };
 
 export const addCardSet = (request, response) => {
-  const newCardSet = new CardSet(request.body);
+  const { cardSetName, cards } = request.body;
+  const slug = slugify(cardSetName);
+
+  const newCardSet = new CardSet({ cardSetName, slug, cards });
 
   newCardSet
     .save()
@@ -48,8 +52,6 @@ export const addCardSet = (request, response) => {
 };
 
 export const updateCardSet = (request, response) => {
-  const checkIsObjectEmpty = (object) => Object.keys(object).length === 0;
-
   CardSet.findByIdAndUpdate(request.params.id, request.body)
     .then(() => {
       if (checkIsObjectEmpty(request.body)) {

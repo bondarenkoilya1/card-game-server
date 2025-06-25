@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const cardSetSchema = new Schema({
   cardSetName: { type: String, required: true, unique: true },
+  slug: { type: String, required: true },
   cards: [
     {
       name: { type: String, required: true },
@@ -12,6 +13,10 @@ const cardSetSchema = new Schema({
     }
   ]
 });
+
+// Ensures slugs like "Math" and "math" are treated as duplicates
+// important: Only for english language
+cardSetSchema.index({ slug: 1 }, { unique: true, collation: { locale: "en", strength: 2 } });
 
 /* The first argument is crucial.
    For example, the word "Math" will be converted to "maths"
