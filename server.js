@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-import { CardSetRoutes, CardRoutes } from "./routes";
+import { CardSetRoutes, CardRoutes } from "./routes/index.js";
 
 dotenv.config();
 

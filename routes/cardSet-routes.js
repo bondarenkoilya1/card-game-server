@@ -1,5 +1,11 @@
 import express from "express";
-import { deleteCardSet, getCardSet, getCardSets, addCardSet, updateCardSet } from "../controllers";
+import {
+  deleteCardSet,
+  getCardSet,
+  getCardSets,
+  addCardSet,
+  updateCardSet
+} from "../controllers/index.js";
 
 const router = express.Router();
 
