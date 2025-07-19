@@ -5,7 +5,7 @@ import {
   getCardSet,
   getCardSets,
   updateCardSet
-} from "../controllers/cardSet-controller";
+} from "../controllers/cardSet-controller.js";
 
 const router = express.Router();
 

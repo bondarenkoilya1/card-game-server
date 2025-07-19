@@ -1,6 +1,6 @@
-import { CardSet } from "../models/cardSet";
-import { checkIsObjectEmpty, handleError, handleSuccess } from "./global";
-import { slugify } from "../utils";
+import { CardSet } from "../models/cardSet.js";
+import { checkIsObjectEmpty, handleError, handleSuccess } from "./global.js";
+import { slugify } from "../utils/slugify.js";
 
 export const getCardSets = (request, response) => {
   CardSet.find()

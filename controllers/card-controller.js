@@ -1,6 +1,6 @@
-import { CardSet } from "../models/cardSet";
+import { CardSet } from "../models/cardSet.js";
 import { response } from "express";
-import { handleError, handleSuccess } from "./global";
+import { handleError, handleSuccess } from "./global.js";
 
 const findCardById = (cardId) => {
   const filterByCardId = { "cards._id": cardId };
